@@ -31,9 +31,75 @@
 extern "C" {
 #endif
 
+#ifndef NULL
+# ifdef __cplusplus
+#  define NULL 0
+# else
+#  define NULL ((void*)0)
+# endif
+#endif
+
+#include <stddef.h>
+#include <stdio.h>
+
+#define PRINT_ACTIONS (1)
+#define SILENCE_ACTIONS (0)
+
+    //--------------------------------------------------------
+    // FUNCTIONS:
+    //
+    //  void   setPrintOut(int);
+    //  void*  Gmalloc(size_t, const char*, int);
+    //  void   Gfree(void*, const char*, int);
+    //  void   printHeap(FILE*);
+    //  size_t currentlyAlloced(void);
+    //  void   G_ClearAll();
+    //
+    //--------------------------------------------------------
+
+    //--------------------------------------------------------
+    // Initially set to {PRINT_ACTIONS}.
+    // If no standard output during allocations and frees is
+    //  wanted, call this function with {SILENCE_ACTIONS}.
+    //
+    void setPrintOut(int state);
 
 
+    //--------------------------------------------------------
+    // Calls libc malloc.
+    //
+    void* Gmalloc(size_t bytes, const char* allocFile, int allocLine);
+    #define gmalloc(bytes) Gmalloc((size_t)(bytes), __FILE__, __LINE__)
 
+
+    //--------------------------------------------------------
+    // Calls libc free.
+    //
+    void Gfree(void* block, const char* freeFile, int freeLine);
+    #define gfree(block) Gfree((void*)(block), __FILE__, __LINE__)
+
+
+    //--------------------------------------------------------
+    // Prints information about heap addresses that have been
+    //  allocated and freed through the gmalloc and gfree
+    //  functions.
+    //
+    void printHeap(FILE* stream);
+
+
+    //--------------------------------------------------------
+    // Returns the total number of currently allocated bytes
+    //  allocated through the gmalloc function.
+    //
+    size_t currentlyAlloced();
+
+
+    //--------------------------------------------------------
+    // Completely deallocates and removes all items on our
+    //  side. This DOES NOT free any memory returned from
+    //  Gmalloc.
+    //
+    void G_ClearAll();
 
 
 #ifdef __cplusplus
